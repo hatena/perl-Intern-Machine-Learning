@@ -1,0 +1,5 @@
+#!/bin/sh
+
+ROOT=$(cd $(dirname "$0")/..; pwd)
+carton install >&2
+carton exec -- perl "$ROOT/script/run.pl" "$@"
