@@ -38,7 +38,7 @@ sub with_data_set {
         my (@features) = @_;
         my $label = pop @features;
         $handler->({
-            features => \@features,
+            features => [ 1, @features ],
             label => ($label eq $target_label
                       ? Intern::ML::Model::Label::Positive
                       : Intern::ML::Model::Label::Negative),
