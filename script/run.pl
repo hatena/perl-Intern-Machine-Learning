@@ -17,7 +17,7 @@ my $module = join '::', $CLI, ucfirst $subcommand;
 eval { load $module };
 $@ and do {
     my $err = $@;
-    $err =~ /compilation aborted/ and warn $err;
+    $err =~ m!^Can't locate Intern/ML/CLI/$subcommand.pm!i or warn $err;
     &help;
 };
 
