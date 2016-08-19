@@ -2,7 +2,7 @@ package Intern::ML::CLI::Iris;
 use strict;
 use warnings;
 
-use Intern::ML::Model::Label;
+use parent qw(Intern::ML::CLI);
 use Intern::ML::Classification::Perceptron;
 use Intern::ML::Evaluation::F1;
 
@@ -31,7 +31,7 @@ sub run {
     do {
         my @training_set;
         my $t = 0;
-        $class->_with_data_set($training_set, sub {
+        $class->with_data_set($training_set, TARGET_LABEL, sub {
             my ($data) = @_;
             push @training_set, $data if !defined($n) || $t++ < $n;
         });
@@ -42,7 +42,7 @@ sub run {
 
     do {
         my @test_set;
-        $class->_with_data_set($test_set, sub {
+        $class->with_data_set($test_set, TARGET_LABEL, sub {
             my ($data) = @_;
             push @test_set, $data;
         });
@@ -51,37 +51,6 @@ sub run {
     };
 
     printf "%f %f\n", $eval_training->accuracy, $eval_test->accuracy;
-}
-
-sub _label_of {
-    my ($class, $label) = @_;
-    return $label eq TARGET_LABEL
-        ? Intern::ML::Model::Label::Positive
-        : Intern::ML::Model::Label::Negative;
-}
-
-sub _with_csv {
-    my ($class, $file, $handler) = @_;
-    open my $fh, '<', $file
-        or die "Cannot open '$file': $!";
-    while (my $line = <$fh>) {
-        chomp $line;
-        next unless $line;
-        $handler->(split ',', $line);
-    }
-    close $fh;
-}
-
-sub _with_data_set {
-    my ($class, $file, $handler) = @_;
-    $class->_with_csv($file, sub {
-        my (@features) = @_;
-        my $label = pop @features;
-        $handler->({
-            features => \@features,
-            label => $class->_label_of($label)
-        });
-    });
 }
 
 sub _evaluate {
